@@ -1,0 +1,46 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "${BACKEND_PORT:-8000}:80"
+    environment:
+      - APP_NAME=Gebze Direksiyon Egitimi
+      - APP_ENV=${APP_ENV:-production}
+      - APP_DEBUG=${APP_DEBUG:-false}
+      - APP_KEY=${APP_KEY}
+      - APP_URL=${BACKEND_URL:-https://api.gebzedireksiyonegitimi.com}
+      - DB_CONNECTION=${DB_CONNECTION:-sqlite}
+      - RUN_MIGRATIONS=${RUN_MIGRATIONS:-true}
+      - FILESYSTEM_DISK=public
+      - SESSION_DRIVER=file
+    volumes:
+      - backend_storage:/var/www/html/storage/app/public
+      - backend_database:/var/www/html/database
+    networks:
+      - app_network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=${VITE_API_URL:-https://api.gebzedireksiyonegitimi.com/api}
+        - VITE_STORAGE_URL=${VITE_STORAGE_URL:-https://api.gebzedireksiyonegitimi.com/storage}
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-3000}:80"
+    depends_on:
+      - backend
+    networks:
+      - app_network
+
+volumes:
+  backend_storage:
+  backend_database:
+
+networks:
+  app_network:
+    driver: bridge

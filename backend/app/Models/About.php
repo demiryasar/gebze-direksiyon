@@ -1,0 +1,15 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class About extends Model
+{
+    protected $table = 'about';
+    protected $fillable = ['content', 'stats', 'image'];
+
+    protected $casts = [
+        'stats' => 'array',
+    ];
+}

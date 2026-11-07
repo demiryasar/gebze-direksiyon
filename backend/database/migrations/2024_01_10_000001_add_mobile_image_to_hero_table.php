@@ -8,15 +8,19 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('hero', function (Blueprint $table) {
-            $table->string('mobile_background_image')->nullable()->after('background_image');
-        });
+        if (Schema::hasTable('hero') && !Schema::hasColumn('hero', 'mobile_background_image')) {
+            Schema::table('hero', function (Blueprint $table) {
+                $table->string('mobile_background_image')->nullable()->after('background_image');
+            });
+        }
     }
 
     public function down(): void
     {
-        Schema::table('hero', function (Blueprint $table) {
-            $table->dropColumn('mobile_background_image');
-        });
+        if (Schema::hasTable('hero') && Schema::hasColumn('hero', 'mobile_background_image')) {
+            Schema::table('hero', function (Blueprint $table) {
+                $table->dropColumn('mobile_background_image');
+            });
+        }
     }
 };

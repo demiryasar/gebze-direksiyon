@@ -37,7 +37,7 @@ chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 # Run database migrations
 if [ "$RUN_MIGRATIONS" = "true" ] || [ "$RUN_MIGRATIONS" = "1" ]; then
     echo "==> Running database migrations..."
-    php artisan migrate --force
+    php artisan migrate --force || echo "==> Migrations note: migrate exited with code $?, continuing startup..."
 fi
 
 # Optimize Laravel cache in production

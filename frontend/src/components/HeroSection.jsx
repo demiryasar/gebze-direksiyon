@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import api from '../lib/api';
 
+const STORAGE_URL = import.meta.env.VITE_STORAGE_URL || 'http://localhost:8000/storage';
+
 export default function HeroSection() {
   const [hero, setHero] = useState(null);
   const [settings, setSettings] = useState({});
@@ -31,11 +33,11 @@ export default function HeroSection() {
 
 
   const desktopUrl = bgImage
-    ? (bgImage.startsWith('http') ? bgImage : `http://localhost:8000/storage/${bgImage}`)
+    ? (bgImage.startsWith('http') ? bgImage : `${STORAGE_URL}/${bgImage}`)
     : null;
 
   const mobileUrl = mobileBgImage
-    ? (mobileBgImage.startsWith('http') ? mobileBgImage : `http://localhost:8000/storage/${mobileBgImage}`)
+    ? (mobileBgImage.startsWith('http') ? mobileBgImage : `${STORAGE_URL}/${mobileBgImage}`)
     : desktopUrl;
 
   return (

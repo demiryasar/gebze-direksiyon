@@ -9,6 +9,12 @@ export default function SettingsPage() {
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
 
+  // Password state
+  const [pwForm, setPwForm] = useState({ current_password: '', new_password: '', new_password_confirmation: '' });
+  const [pwSaving, setPwSaving] = useState(false);
+  const [pwSaved, setPwSaved] = useState(false);
+  const [pwError, setPwError] = useState('');
+
   useEffect(() => {
     api.get('/site-data').then((r) => {
       const s = r.data.settings || {};
@@ -25,6 +31,23 @@ export default function SettingsPage() {
       setTimeout(() => setSaved(false), 3000);
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handlePasswordSubmit = async (e) => {
+    e.preventDefault();
+    setPwSaving(true);
+    setPwError('');
+    setPwSaved(false);
+    try {
+      await api.post('/admin/change-password', pwForm);
+      setPwSaved(true);
+      setPwForm({ current_password: '', new_password: '', new_password_confirmation: '' });
+      setTimeout(() => setPwSaved(false), 4000);
+    } catch (err) {
+      setPwError(err.response?.data?.message || err.response?.data?.errors?.current_password?.[0] || 'Şifre güncellenemedi.');
+    } finally {
+      setPwSaving(false);
     }
   };
 
@@ -105,6 +128,81 @@ export default function SettingsPage() {
           </button>
         </div>
       </form>
+
+      {/* Password Change Card */}
+      <div style={{ background: 'white', borderRadius: 20, padding: 28, boxShadow: 'var(--shadow-sm)', marginTop: 32 }}>
+        <h3 style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700, marginBottom: 8, color: 'var(--color-navy)' }}>
+          🔒 Yönetici Şifresini Değiştir
+        </h3>
+        <p style={{ color: 'var(--color-text-muted)', fontSize: '0.9rem', marginBottom: 20 }}>
+          Admin paneli giriş şifrenizi buradan güvenle güncelleyebilirsiniz.
+        </p>
+
+        <form onSubmit={handlePasswordSubmit}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 20 }}>
+            <div className="form-group">
+              <label className="form-label">Mevcut Şifre</label>
+              <input
+                type="password"
+                className="form-input"
+                placeholder="••••••••"
+                value={pwForm.current_password}
+                onChange={(e) => setPwForm({ ...pwForm, current_password: e.target.value })}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Yeni Şifre (En az 6 karakter)</label>
+              <input
+                type="password"
+                className="form-input"
+                placeholder="••••••••"
+                value={pwForm.new_password}
+                onChange={(e) => setPwForm({ ...pwForm, new_password: e.target.value })}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Yeni Şifre (Tekrar)</label>
+              <input
+                type="password"
+                className="form-input"
+                placeholder="••••••••"
+                value={pwForm.new_password_confirmation}
+                onChange={(e) => setPwForm({ ...pwForm, new_password_confirmation: e.target.value })}
+                required
+              />
+            </div>
+          </div>
+
+          {pwError && (
+            <div style={{
+              background: '#fee2e2', color: '#991b1b',
+              borderRadius: 12, padding: '12px 18px',
+              marginTop: 16, fontSize: '0.9rem', fontWeight: 500,
+            }}>❌ {pwError}</div>
+          )}
+
+          {pwSaved && (
+            <div style={{
+              background: '#d1fae5', color: '#065f46',
+              borderRadius: 12, padding: '12px 18px',
+              marginTop: 16, fontSize: '0.9rem', fontWeight: 600,
+            }}>✅ Şifreniz başarıyla güncellendi!</div>
+          )}
+
+          <div style={{ marginTop: 20 }}>
+            <button
+              type="submit"
+              className="btn btn-primary"
+              disabled={pwSaving}
+              style={{ padding: '12px 32px' }}
+            >
+              {pwSaving ? 'Güncelleniyor...' : '🔑 Şifreyi Güncelle'}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

@@ -21,6 +21,7 @@ Route::post('/admin/login', [AuthController::class, 'login']);
 Route::middleware(['auth:sanctum'])->prefix('admin')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
+    Route::post('/change-password', [AuthController::class, 'changePassword']);
 
     // Services
     Route::get('/services', [ServiceController::class, 'all']);

@@ -44,4 +44,30 @@ class AuthController extends Controller
     {
         return response()->json($request->user());
     }
+
+    public function changePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required',
+            'new_password'     => 'required|min:6|confirmed',
+        ], [
+            'current_password.required' => 'Mevcut şifrenizi girmelisiniz.',
+            'new_password.required'     => 'Yeni şifrenizi girmelisiniz.',
+            'new_password.min'          => 'Yeni şifreniz en az 6 karakter olmalıdır.',
+            'new_password.confirmed'    => 'Yeni şifreler birbiriyle uyuşmuyor.',
+        ]);
+
+        $admin = $request->user();
+
+        if (! Hash::check($request->current_password, $admin->password)) {
+            throw ValidationException::withMessages([
+                'current_password' => ['Mevcut şifreniz yanlış.'],
+            ]);
+        }
+
+        $admin->password = $request->new_password;
+        $admin->save();
+
+        return response()->json(['message' => 'Şifreniz başarıyla güncellendi!']);
+    }
 }

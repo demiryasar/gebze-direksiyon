@@ -27,6 +27,9 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
         opcache \
         bcmath
 
+# Copy PHP config overrides (upload limits etc.)
+COPY docker/php.ini /usr/local/etc/php/conf.d/uploads.ini
+
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 

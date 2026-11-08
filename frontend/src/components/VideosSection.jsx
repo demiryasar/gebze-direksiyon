@@ -134,7 +134,7 @@ export default function VideosSection() {
           <div onClick={(e) => e.stopPropagation()}>
             {active.type === 'file' ? (
               <video
-                src={active.url?.startsWith('http') ? active.url : `${STORAGE_URL}/${active.file_path}`}
+                src={`${STORAGE_URL}/${active.file_path}`}
                 controls autoPlay
                 style={{ width: '100%', maxWidth: 900, borderRadius: 12, maxHeight: '80vh' }}
               />
@@ -143,8 +143,9 @@ export default function VideosSection() {
                 src={getEmbedUrl(active)}
                 title={active.title}
                 frameBorder="0"
-                allow="autoplay; fullscreen"
+                allow="autoplay; fullscreen; picture-in-picture"
                 allowFullScreen
+                style={{ width: '100%', maxWidth: 900, aspectRatio: '16/9', borderRadius: 12 }}
               />
             )}
           </div>
